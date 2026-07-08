@@ -19,6 +19,10 @@ if __name__ == "__main__" :
 
     B,T,d_model,n_head  = 1,5,12,3
     d_head=d_model // n_head
+    
+
+
+    x= torch.randn(B,T,d_model)
     attn = MultiHeadSelfAttention(d_model, n_head , trace_shapes=True)
     log(f"Input x:           {tuple(x.shape)} = (B,T,d_model)")
     qkv=attn.qkv(x) #(B,T,3*d_model)

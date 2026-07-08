@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from attn_mask import causal_mask
 
-class MultiHeadSelfAttention(nn.module):
+class MultiHeadSelfAttention(nn.Module):
 
     """Multi head attention with explicit shape tracing
     
@@ -20,11 +20,11 @@ class MultiHeadSelfAttention(nn.module):
     merge : (B,T,n_head*d_head)
     """
 
-    def __init__(self, d_model:int , n_head : int , dropout : float = 0.0 , trace_shapes : bool = true ) : 
+    def __init__(self, d_model:int , n_head : int , dropout : float = 0.0 , trace_shapes : bool = True ) : 
         super().__init()
         assert d_model % n_head == 0 , "d_model must be divisibe by n_head"
         self.n_head = n_head
-        self . d_head = d_model // n_head
+        self.d_head = d_model // n_head
         self.qkv = nn.Linear(d_model , 3*d_model , bias = False)
         self.proj = nn.Linear(d_model , d_model , bias = False)
         self.dropout = nn.Dropout(dropout)
