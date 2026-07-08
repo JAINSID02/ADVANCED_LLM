@@ -21,7 +21,7 @@ class MultiHeadSelfAttention(nn.Module):
     """
 
     def __init__(self, d_model:int , n_head : int , dropout : float = 0.0 , trace_shapes : bool = True ) : 
-        super().__init()
+        super().__init__()
         assert d_model % n_head == 0 , "d_model must be divisibe by n_head"
         self.n_head = n_head
         self.d_head = d_model // n_head
@@ -52,7 +52,7 @@ class MultiHeadSelfAttention(nn.Module):
         mask = causal_mask( T , device=x.device)
         attn = attn.masked_fill(mask , float('-inf'))
         w=F.softmax(attn, dim = -1)
-        w=self.droput(w)
+        w=self.dropout(w)
         ctx = torch.matmul(w,v) #(B , n_head , T , d_head)
 
         if self.trace_shapes :

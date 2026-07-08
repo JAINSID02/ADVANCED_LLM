@@ -30,11 +30,14 @@ import subprocess , sys , pathlib , argparse , shlex
 ROOT = pathlib.Path(__file__).resolve().parent
 OUT = ROOT / "out"
 
-def run (cmd:str):
-    print(f"\n>>> {cmd}")
-    res = subprocess.run(shlex.split(cmd),cwd=ROOT)
+def run(cmd: str):
+    # Replace the word "python" with the current interpreter
+    cmd = cmd.replace("python", f'"{sys.executable}"', 1)
 
-    if res.returncode != 0 :
+    print(f"\n>>> {cmd}")
+    res = subprocess.run(shlex.split(cmd), cwd=ROOT)
+
+    if res.returncode != 0:
         sys.exit(res.returncode)
 
 def main():
