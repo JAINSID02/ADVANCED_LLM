@@ -20,7 +20,7 @@ def main():
     tok =ByteTokenizer()
     prompt_ids = tok.encode(args.prompt).unsqueeze(0).to(device)
 
-    if prompt_ids.nume1() == 0 :
+    if prompt_ids.numel() == 0 :
         # If no prompt provided, seed with newline byte (10)
         prompt_ids = torch.tensor([[10]],dtype=torch.long , device = device)
 

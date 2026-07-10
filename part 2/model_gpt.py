@@ -18,7 +18,7 @@ class CausalSelfAttention(nn.Module):
 
     def forward(self,x:torch.Tensor): #(B,T,C)
         B,T,C=x.shape
-        qkv=self.qkv.view(B,T,3,self.n_head,self.d_head)
+        qkv=self.qkv(x).view(B,T,3,self.n_head,self.d_head)
         q,k,v=qkv.unbind(dim=2)
         q=q.transpose(1,2)
         k=k.transpose(1,2)
@@ -79,7 +79,7 @@ class GPT(nn.Module):
             nn.init.normal_(m.weight,mean=0.0,std=0.02)
 
             if m.bias is not None:
-                nn.init.zeros(m.bias)
+                nn.init.zeros_(m.bias)
 
         elif isinstance(m,nn.Embedding):
             nn.init.normal_(m.weight,mean=0.0,std=0.02)
@@ -89,7 +89,7 @@ class GPT(nn.Module):
         assert T<= self.block_size
         pos=torch.arange(0,T,device=idx.device).unsqueeze(0)
         x=self.tok_emb(idx)+self.pos_emb(pos)
-        self.drop(x)
+        x = self.drop(x)
         for blk in self.blocks:
             x=blk(x)
 
@@ -112,7 +112,7 @@ class GPT(nn.Module):
             idx=torch.full((idx.size(0),1),10 , dtype=torch.long , device=idx.device)
 
         for _ in range(max_new_tokens):
-            idx_cond=idx[:, -self.block_size]
+            idx_cond=idx[:, -self.block_size:]
             logits, _ = self(idx_cond)
             logits=logits[:,-1,:]/max(temperature,1e-6)
             logits=top_k_top_p_filtering(logits,top_k=top_k,top_p=top_p)

@@ -13,7 +13,7 @@ class ByteTokenizer:
         return torch.tensor(list(s.encode('utf-8')), dtype = torch.long)
     
     def decode(self , ids) ->str:
-        if isinstance(ids,torch.tensor):
+        if isinstance(ids,torch.Tensor):
             ids = ids.tolist()
 
         return bytes(ids).decode('utf-8' , errors = 'ignore')

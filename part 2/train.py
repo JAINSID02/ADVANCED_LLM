@@ -57,7 +57,7 @@ def main():
         model = torch.compile(model)
 
     opt = torch.optim.AdamW(model.parameters() , lr = args.lr , betas=(0.9 , 0.95) , weight_decay = args.weight_decay)
-    scaler = torch.amp.GradScaler(enabled=(args.amp and args.type.device == 'cuda'))
+    scaler = torch.amp.GradScaler(enabled=(args.amp and args.device.type == 'cuda'))
 
     
     best_val = float('inf')
@@ -66,8 +66,11 @@ def main():
 
     for step in range(1 , args.steps + 1):
         xb,yb = ds.get_batch('train',args.batch_size,args.device)
-        with torch.amp.autocast(enabled=(args.amp and args.device.type =='cuda')):
-            _ , loss = model(xb,yb)
+        with torch.amp.autocast(
+            device_type="cuda",
+            enabled=(args.amp and args.device.type == "cuda")
+            ):
+            _, loss = model(xb, yb)
         opt.zero_grad(set_to_none=True)
         scaler.scale(loss).backward()
         if args.grad_clip>0:
@@ -101,11 +104,17 @@ def main():
                 print(f"saved checkpoint: {ckpt_path}")
 
         if args.sample_every > 0 and step % args.sample_every == 0 :
-            start = torch.randint(low=0 , high = len(ds.train) - args.block.size -1 , size = (1,)).item()
+            start = torch.randint(low=0 , high = len(ds.train) - args.block_size -1 , size = (1,)).item()
             seed = ds.train[start:start + args.block_size].unsqueeze(0).to(args.device)
             out=model.generate(seed , max_new_tokens=args.sample_tokens , temperature = args.temperature , top_k = args.top_k , top_p = args.top_p)
-            txt = tok.decode(out[0].cpu())
-            print("\n================ SAMPLE ================\n" + txt[-(args.block_size + args.sample_tokens):] + "\n=======================================\n")
+            prompt = tok.decode(seed[0].cpu())
+            generated = tok.decode(out[0, seed.shape[1]:].cpu())
+
+            print("========== PROMPT ==========")
+            print(prompt)
+
+            print("\n======= GENERATED =========")
+            print(generated)
 
     
     #final save
