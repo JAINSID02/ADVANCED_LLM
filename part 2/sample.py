@@ -39,7 +39,14 @@ def main():
     with torch.no_grad():
         out = model.generate(prompt_ids , max_new_tokens=args.tokens , temperature = args.temperature , top_k = args.top_k , top_p = args.top_p)
 
-    print(tok.decode(out[0].cpu()))
+    prompt = tok.decode(prompt_ids[0].cpu())
+    generated = tok.decode(out[0, prompt_ids.shape[1]:].cpu())
+
+    print("\n========== PROMPT ==========")
+    print(prompt)
+
+    print("\n======= GENERATED =========")
+    print(generated)
 
 if __name__ == '__main__':
     main()
