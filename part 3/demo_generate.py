@@ -20,7 +20,7 @@ if __name__ == "__main__":
     tok=ByteTokenizer()
     model = GPTModern(vocab_size=tok.vocab_size,block_size=128,n_layer=2,n_head=4,n_embd=128,
                       use_rmsnorm=args.rmsnorm,use_swiglu=args.swiglu,rope=args.rope,
-                      max_pos=4096,sliding_window=args.sliding_window,attention_sink=args.attention_sink,
+                      max_pos=4096,sliding_window=args.sliding_window,attention_sink=args.sink,
                       n_kv_head=args.group_size).to(device)
     
     prompt=torch.tensor([[10]],dtype=torch.long,device=device)

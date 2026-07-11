@@ -25,7 +25,7 @@ class RollingKV :
 
     def step(self , k_new : torch.Tensor , v_new : torch.Tensor):
         if self.k is None :
-            self.k  , self.view = k_new,v_new
+            self.k  , self.v = k_new,v_new
         else:
             self.k = torch.cat([self.k,k_new] , dim=2)
             self.v = torch.cat([self.v,v_new] , dim=2)

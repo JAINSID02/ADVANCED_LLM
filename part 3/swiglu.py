@@ -8,7 +8,7 @@ class SwiGLU(nn.Module):
         self.w1 = nn.Linear(dim,inner,bias=False)
         self.w2 = nn.Linear(dim,inner,bias=False)
         self.w3 = nn.Linear(inner , dim , bias=False)
-        self.act=nn.SILU()
+        self.act=nn.SiLU()
         self.drop=nn.Dropout(dropout)
 
     def forward(self,x):

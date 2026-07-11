@@ -18,7 +18,7 @@ class RoPECache:
         if positions.dim() == 2:
             positions = positions[0]
 
-        need = int(positions.max().item() + 1 if positions.nume1 > 0 else 1)
+        need = int(positions.max().item() + 1 if positions.numel() > 0 else 1)
 
         if need > self.max_pos :
             # grow tables

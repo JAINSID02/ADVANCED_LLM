@@ -26,8 +26,8 @@ class GPTModern(nn.Module):
 
     def forward(self, idx:torch.Tensor, targets:torch.Tensor|None=None , kv_cache_list =  None , start_pos : int = 0 ) :
         B,T=idx.shape
-        assert T < self.block_size
-        pos= torch.arannge(0,T,device=idx.device).unsqueeze(0)
+        assert T <= self.block_size
+        pos= torch.arange(0,T,device=idx.device).unsqueeze(0)
         x=self.tok_emb(idx)
         # + self.pos_emb(pos)
         x=self.drop(x)
@@ -63,7 +63,7 @@ class GPTModern(nn.Module):
 
         for _ in range(max_new_tokens):
             # feed full prompt once; then only the last token
-            idx_cond=idx[:-self.block_size:] if kvs[0] is None else idx[:,-1:]
+            idx_cond=idx[:,-self.block_size:] if kvs[0] is None else idx[:,-1:]
 
             #absolute start position from cache_length ( 0 on first step)
             start_pos = 0 if kvs[0] is None else kvs[0].k.size(2)
@@ -98,7 +98,7 @@ class GPTModern(nn.Module):
             # absolute position of first token in the window (matches cached path)
             start_pos=idx.size(1)-idx_cond.size(1)
 
-            logits , _ , _ = self(idx_cond,kv_cache_kist=None,start_pos=start_pos)
+            logits , _ , _ = self(idx_cond,kv_cache_list=None,start_pos=start_pos)
 
             next_logits=logits[:,-1,:]/max(temperature,1e-6)
             next_logits = _tk(next_logits, top_k=top_k, top_p=top_p)

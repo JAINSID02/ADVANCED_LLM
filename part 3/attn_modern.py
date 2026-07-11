@@ -41,8 +41,8 @@ class CausalSelfAttentionModern(nn.Module):
         #projections
 
         q= self.wq(x).view(B , T ,self.n_head , self.d_head).transpose(1,2) #(B,H,T,D)
-        k= self.wk(x).view(B , T ,self.n_head , self.d_head).transpose(1,2) #(B,H,T,D)
-        v= self.wv(x).view(B , T ,self.n_head , self.d_head).transpose(1,2) #(B,H,T,D)
+        k= self.wk(x).view(B , T ,self.n_kv_head , self.d_head).transpose(1,2) #(B,H,T,D)
+        v= self.wv(x).view(B , T ,self.n_kv_head , self.d_head).transpose(1,2) #(B,H,T,D)
 
         #RoPE on *current* tokens (cached keys are already rotated)
 
@@ -50,7 +50,7 @@ class CausalSelfAttentionModern(nn.Module):
             pos = torch.arange(start_pos,start_pos+T,device = x.device)
             cos , sin = self.rope_cache.get(pos)
             q=apply_rope_single(q,cos , sin )
-            k=apply_rope_single(q ,cos  , sin )
+            k=apply_rope_single(k ,cos  , sin )
 
         # Concatenate past cache ( cache is stored in Hk heads  )
 
@@ -63,14 +63,14 @@ class CausalSelfAttentionModern(nn.Module):
 
         # Sliding window + attention sink ( crop along seq length)
 
-        if self.sliding_window is not None and k.all.size(2) > (self.sliding_window + self.attention_sink):
+        if self.sliding_window is not None and k_all.size(2) > (self.sliding_window + self.attention_sink):
             s=self.attention_sink
             k_all = torch.cat([k_all[:,:,:s,:],k_all[:,:,-self.sliding_window:,:]],dim=2)
             v_all = torch.cat([v_all[:,:,:s,:],v_all[:,:,-self.sliding_window:,:]],dim=2)
 
         # --- GQA expand: repeat K/V heads to match Q heads before attention ---
 
-        if self.n_kv_head != self.kv_head :
+        if self.n_kv_head != self.n_head :
             k_attn=k_all.repeat_interleave(self.group_size , dim=1) # (B,H,Tk,D)
             v_attn=v_all.repeat_interleave(self.group_size , dim=1) # (B,H,Tk,D)
 
