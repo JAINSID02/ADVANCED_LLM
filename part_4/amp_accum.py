@@ -37,4 +37,4 @@ class AmpGrad:
             self.optim.step()
 
     def zero_grad(self):
-        self.optim.zer_grad(set_to_none=True)
+        self.optim.zero_grad(set_to_none=True)

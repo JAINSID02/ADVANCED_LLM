@@ -92,7 +92,7 @@ def _maybe_log_attention(logger , model , xb , step : int  , every : int = 100):
     
     try :
         import torch
-        with torch.no_grad() , torch.amp.autocast(enabled=False):
+        with torch.no_grad() , torch.amp.autocast(device_type=xb.device.type,enabled=False):
             #Recreate inputs seen by blocks
             x=model.tok_emb(xb)    #(B,T,C)
             x=model.drop(x)
@@ -293,25 +293,25 @@ def load_checkpoint(model , path:str , optimizer=None , scheduler = None , amp =
         ok , msg =  _verify_model_matches(model,cfg)
         if not ok :
             raise RuntimeError(msg + "\nRebuild the model with this config, or load with strict=False.")
-        else:
-            # Legacy checkpoint without config: strongly encourage a rebuild step elsewhere
-            print("[compat] Warning: checkpoint has no config; cannot verify architecture.")
+    else:
+        # Legacy checkpoint without config: strongly encourage a rebuild step elsewhere
+        print("[compat] Warning: checkpoint has no config; cannot verify architecture.")
 
-        missing , unexpected = model.load_state_dict(ckpt["model"] , strict=strict)
+    missing , unexpected = model.load_state_dict(ckpt["model"] , strict=strict)
 
-        if strict and (missing or unexpected):
-            raise RuntimeError(f"State dict mismatch:\n  missing: {missing}\n  unexpected: {unexpected}")
-        
-        if optimizer is not None and ckpt.get("optimizer") is not None :
-            optimizer.load_state_dict(ckpt["optimizer"])
+    if strict and (missing or unexpected):
+        raise RuntimeError(f"State dict mismatch:\n  missing: {missing}\n  unexpected: {unexpected}")
+    
+    if optimizer is not None and ckpt.get("optimizer") is not None :
+        optimizer.load_state_dict(ckpt["optimizer"])
 
-        if scheduler is not None and ckpt.get("scheduler") is not None and hasattr(scheduler,"load_state_dict"):
-            scheduler.load_state_dict(ckpt["scheduler"])
+    if scheduler is not None and ckpt.get("scheduler") is not None and hasattr(scheduler,"load_state_dict"):
+        scheduler.load_state_dict(ckpt["scheduler"])
 
-        if amp is not None and ckpt.get("amp_scaler") is not None and getattr(amp,"scaler",None) :
-            amp.scaler.load_state_dict(ckpt["amp_scaler"])
+    if amp is not None and ckpt.get("amp_scaler") is not None and getattr(amp,"scaler",None) :
+        amp.scaler.load_state_dict(ckpt["amp_scaler"])
 
-        return ckpt.get("step" , 0)
+    return ckpt.get("step" , 0)
     
 # ----------------------------- checkpoint/save utils ----------------------------- #
 

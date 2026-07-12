@@ -62,7 +62,7 @@ class BPETokenizer:
         meta_file = dirp / "bpe_meta.json"
 
         if meta_file.exists():
-            meta = json.loads(meta.file.read_txt())
+            meta = json.loads(meta_file.read_text())
             self.vocab_size = meta.get("vocab_size" , self.vocab_size)
             self.special_tokens = meta.get("special_tokens", self.special_tokens)
 

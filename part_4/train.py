@@ -193,7 +193,8 @@ def main():
             
             it_t0 = time.time()
             xb,yb = xb.to(device) , yb.to(device)
-            with torch.amp.autocast(enabled = amp.amp):
+            device_type = "cuda" if torch.cuda.is_available() else "cpu"
+            with torch.amp.autocast(device_type=device_type,enabled = amp.amp):
                 logits , loss , _   = model(xb,yb)
 
             amp.backward(loss)
