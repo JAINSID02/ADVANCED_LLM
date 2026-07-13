@@ -4,11 +4,11 @@ We keep a very simple template with clear separators.
 
 from  dataclasses import dataclass
 
-template = {
+template = (
     "<s>\n"
     "### Instruction:\n{instruction}\n\n"
     "### Response:\n{response}</s>"
-}
+)
 
 @dataclass
 class Example:

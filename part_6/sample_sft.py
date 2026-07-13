@@ -39,7 +39,7 @@ def main():
 
     prompt_text  = format_prompt_only(args.prompt).replace('</s>','')
     ids = col.encode(prompt_text)
-    idx=torch.tensor([ids] , type = torch.long , device=device)
+    idx=torch.tensor([ids] , dtype = torch.long , device=device)
 
     with torch.no_grad():
         out = model.generate(idx , max_new_tokens = args.tokens , temperature = args.temperature ,top_k=3)

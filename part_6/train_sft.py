@@ -43,7 +43,7 @@ def main():
     # Curriculum over (prompt,response)
     tuples = [(it.prompt , it.response) for it in items]
     cur = list(LengthCurriculum(tuples))
-    print(cur)
+    print(len(cur))
 
     # Collator + model
     col = SFTCollator(block_size = args.block_size , bpe_dir = args.bpe_dir)

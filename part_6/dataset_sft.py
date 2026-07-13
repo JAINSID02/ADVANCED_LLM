@@ -38,8 +38,9 @@ def load_tiny_hf(split : str = "train[:200]" , sample_dataset : bool = False) ->
                 if instr and out:
                     items.append(SFTItem(prompt = instr , response = out))
 
-        except Exception:
-            pass
+        except Exception as e:
+            print("Failed to load Hugging Face dataset:")
+            traceback.print_exc()
 
     if not items:
         # fallback tiny dataset
