@@ -9,9 +9,8 @@ class MoE(nn.Module):
     Implementation is single‑GPU friendly (loops over experts for clarity).
     https://arxiv.org/pdf/2101.03961
     """
-    def __init__(self , dim : int , n_expert: int , k : int = 1 , mult : int = 4 , swiglu : bool = True ,
-                 dropout : float = 0.0):
-        super.__init__()
+    def __init__(self , dim : int , n_expert: int , k : int = 1 , mult : int = 4 , swiglu : bool = True ,dropout : float = 0.0):
+        super().__init__()
         self.dim = dim
         self.n_expert=n_expert
         self.k=k

@@ -27,7 +27,7 @@ class TopKGate(nn.Module):
         # x: (S, C) where S = tokens (batch * seq)
         logits = self.w_g(x)                  # (S, E)
         probs = torch.softmax(logits , dim = -1) # (S, E)
-        topk_vals , topk_idx  = torch.top_k(probs , k=self.k , dim =-1)   # (S,k)
+        topk_vals , topk_idx  = torch.topk(probs , k=self.k , dim =-1)   # (S,k)
         # Load‑balancing aux loss (Switch):
 
         S,E  =probs.size(0) , probs.size(1)

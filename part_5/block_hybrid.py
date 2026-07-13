@@ -1,6 +1,6 @@
 from __future__ import annotations
 import torch.nn as nn
-import moe as MoE
+from moe import MoE
 
 class HybridFFN(nn.Module):
     """Blend dense FFN with MoE output: y = α * Dense(x) + (1−α) * MoE(x).

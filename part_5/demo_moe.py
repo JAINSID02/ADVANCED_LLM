@@ -12,7 +12,7 @@ if __name__ == '__main__':
     args = p.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() and not args.cpu else 'cpu')
-    x = torch.randn(2 , args.token//2 , args.hidden , device =device )  # (B=2,T=tokens/2,C)
+    x = torch.randn(2 , args.tokens//2 , args.hidden , device =device )  # (B=2,T=tokens/2,C)
 
     moe = MoE(dim = args.hidden , n_expert=args.experts , k = args.top_k).to(device)
 
