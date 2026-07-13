@@ -40,5 +40,5 @@ class MoE(nn.Module):
                     y[sel]+=w[sel,slot:slot+1] * y_e
 
         y = y.view(B,T,C)
-        return y
+        return y , aux
 
