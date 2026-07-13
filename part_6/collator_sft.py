@@ -9,7 +9,7 @@ import sys
 from pathlib import Path as _P
 sys.path.append(str(_P(__file__).resolve().parents[1]/'part_4'))
 try :
-    from tokenizer_bpe import BPETokenizer
+    from tokenizer_bpe import BPETokenizer # type: ignore
     _HAS_BPE = True
 
 except Exception:
@@ -17,7 +17,7 @@ except Exception:
 
 sys.path.append(str(_P(__file__).resolve().parents[1]/'part_3'))
 try :
-    from tokenizer import ByteTokenizer
+    from tokenizer import ByteTokenizer # type: ignore
 except Exception:
     ByteTokenizer = None
 
