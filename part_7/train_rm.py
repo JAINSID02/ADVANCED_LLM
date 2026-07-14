@@ -57,7 +57,7 @@ def main():
         else :
             loss = margin_ranking_loss(r_pos , r_neg , margin = 1.0)
 
-        opt.zer_grad(set_to_none=True)
+        opt.zero_grad(set_to_none=True)
         loss.backward()
         opt.step()
 
@@ -68,7 +68,7 @@ def main():
             print(f"step {step}: loss={loss.item():.4f} acc={acc:.2f}")
 
     Path(args.out).mkdir(parents = True , exist_ok= True)
-    torch.save({'model':model.state.dict() , 'config' : {
+    torch.save({'model':model.state_dict() , 'config' : {
         'vocab_size' : col.vocab_size , 
         'block_size' : args.block_size ,
         'n_layer' : args.n_layer ,

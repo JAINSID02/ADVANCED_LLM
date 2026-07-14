@@ -6,7 +6,7 @@ try:
     from datasets import load_dataset
 
 except Exception:
-    laod_dataset = None
+    load_dataset = None
 
 @dataclass
 class PrefExample:
@@ -25,7 +25,7 @@ def load_preferences(split : str ="train[:200]")->List[PrefExample]:
             ds = load_dataset("Anthropic/hh-rlhf" , split = split)
             for row in ds :
                 ch = str(row.get("chosen","")).strip()
-                rj = str(row.get("rejected", "")).strp()
+                rj = str(row.get("rejected", "")).strip()
 
                 if ch and rj :
                     items.append(PrefExample(prompt="" , chosen = ch  , rejected = rj))

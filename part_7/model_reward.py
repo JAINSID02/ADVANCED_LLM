@@ -8,9 +8,9 @@ class RewardModel(nn.Module):
         self.vocab_size = vocab_size
         self.block_size = block_size
         self.tok_emb = nn.Embedding(vocab_size , n_embd)
-        self.pos_embedding = nn.Embedding(block_size , n_embd)
-        enc_layer = nn.TransformerEncoderLayer(d_model= n_embd , n_head = n_head , dim_feedforward = 4*n_embd , 
-                                               fropout = dropout , activation = 'gelu' , batch_first = True)
+        self.pos_emb = nn.Embedding(block_size , n_embd)
+        enc_layer = nn.TransformerEncoderLayer(d_model= n_embd , nhead = n_head , dim_feedforward = 4*n_embd , 
+                                               dropout = dropout , activation = 'gelu' , batch_first = True)
         self.encoder = nn.TransformerEncoder(enc_layer  , num_layers = n_layer)
         self.ln = nn.LayerNorm(n_embd)
         self.head=nn.Linear(n_embd , 1)
