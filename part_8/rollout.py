@@ -83,7 +83,7 @@ def model_logprobs(model , x:torch.Tensor) ->torch.Tensor:
     # compute log p(x[t+1] | x[:t]) for t
     logits , _ , _  = model.lm(x , None) if hasattr(model , 'lm') else model(x, None)
     labels = shift_labels(x)
-    lp = gather_logprobs(logits[:,-1,:],labels)
+    lp = gather_logprobs(logits[:,:-1,:],labels)
     return lp #(B,T-1)
 
 def approx_kl(policy_logp : torch.Tensor , ref_logp : torch.Tensor)-> torch.Tensor :

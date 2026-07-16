@@ -16,14 +16,21 @@
 #   python orchestrator.py --demo 
 #   pytest -q
 
-import argparse, pathlib, subprocess, sys
+import argparse, pathlib, subprocess, sys , shlex
 ROOT = pathlib.Path(__file__).resolve().parent
 
 def run(cmd: str):
     print(f"\n>>> {cmd}")
-    res = subprocess.run(cmd.split(), cwd=ROOT)
+
+    # replace "python" with the current interpreter
+    if cmd.startswith("python "):
+        cmd = cmd.replace("python", f'"{sys.executable}"', 1)
+
+    res = subprocess.run(shlex.split(cmd), cwd=ROOT)
+
     if res.returncode != 0:
         sys.exit(res.returncode)
+
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()

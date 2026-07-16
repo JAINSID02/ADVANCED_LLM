@@ -18,7 +18,7 @@ from ppo_loss import ppo_losses
 def compute_reward(reward_model : RewardModel , tok:RLHFTokenizer  , prompt : str , response:str , device)->float:
     text = format_example(__import__('part_6.formatters', fromlist=['Example']).Example(prompt, response))
     ids = tok.encode(text)
-    x=torch.Tensor([ids[:tok.block_size]] , dtype = torch.long  , device = device)
+    x=torch.tensor([ids[:tok.block_size]] , dtype = torch.long  , device = device)
     with torch.no_grad():
         r= reward_model(x)
     return float(r[0].item())
@@ -72,7 +72,7 @@ def main():
     rm.load_state_dict(rckpt['model'])
     rm.eval()
 
-    opt = torch.optim.AdamW(policy.parameters() , lr = args.lr() , betas=(0.9,0.999))
+    opt = torch.optim.AdamW(policy.parameters() , lr = args.lr , betas=(0.9,0.999))
 
     #small prompt pool
     prompts = sample_prompts(16)
@@ -91,7 +91,7 @@ def main():
             out_ids = []
             for i , x in enumerate( in_ids):
                 idx = torch.tensor([x] , dtype = torch.long , device = device)
-                out = policy.generate(idx , max_new_tokens = args.resp_len , temperature = 0.2  , tok_k=3)
+                out = policy.generate(idx , max_new_tokens = args.resp_len , temperature = 0.2  , top_k=3)
                 out_ids.append(out[0].tolist())
 
         # split prompt / response per sample
@@ -152,7 +152,7 @@ def main():
         # KL per action token and shaped rewards
 
         kl = (old_logp - ref_logp)
-        shaped_r = rewards[:,1:][act_mask] - args.kl_coed * kl # penalty for drifting
+        shaped_r = rewards[:,1:][act_mask] - args.kl_coef * kl # penalty for drifting
 
         # Compute advantages/returns with last‑step bootstrap = 0 (episodic per response)
         # Flatten by sequence order inside each sample; we’ll approximate by grouping tokens per sample using last_idx.
@@ -182,7 +182,7 @@ def main():
         opt.zero_grad(set_to_none = True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(policy.parameters() ,1.0)
-        out.step()
+        opt.step()
         policy.eval()
 
         with torch.no_grad():
