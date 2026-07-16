@@ -38,6 +38,7 @@ def main():
     p.add_argument('--lr', type=float, default=1e-5)
     p.add_argument('--bpe_dir', type=str, default=None)
     p.add_argument('--cpu', action='store_true')
+    p.add_argument('--num_prompts', type=int, default=16, help='size of the prompt pool sampled for rollouts; increase for more variety over a longer run')
     args = p.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() and not args.cpu else 'cpu')
@@ -74,8 +75,8 @@ def main():
 
     opt = torch.optim.AdamW(policy.parameters() , lr = args.lr , betas=(0.9,0.999))
 
-    #small prompt pool
-    prompts = sample_prompts(16)
+    #prompt pool
+    prompts = sample_prompts(args.num_prompts)
 
     step = 0
     while step < args.steps :

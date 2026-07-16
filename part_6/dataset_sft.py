@@ -53,3 +53,21 @@ def load_tiny_hf(split : str = "train[:200]" , sample_dataset : bool = False) ->
 
 
     return items
+
+
+def load_training_data(alpaca_split: str = "train[:3000]", include_chitchat: bool = True,
+                        chitchat_repeat: int = 3) -> List[SFTItem]:
+    """Combined SFT data source: a (configurable-size) slice of Alpaca for general
+    instruction-following + a small hand-written chit-chat/identity set (6.x),
+    oversampled by `chitchat_repeat` so it isn't drowned out by Alpaca's volume.
+
+    This is what train_sft.py should call instead of the old hardcoded
+    `load_tiny_hf(split='train[:24]')`.
+    """
+    items = load_tiny_hf(split=alpaca_split, sample_dataset=False)
+
+    if include_chitchat:
+        from chitchat_data import load_chitchat
+        items = items + load_chitchat(repeat=chitchat_repeat)
+
+    return items

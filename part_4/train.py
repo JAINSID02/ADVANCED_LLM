@@ -72,6 +72,8 @@ def main():
 
     # misc
     p.add_argument('--log', choices=['wandb', 'tensorboard', 'none'], default='tensorboard')
+    p.add_argument('--log_every', type=int, default=50, help='log scalars (loss/lr/etc) every N optimizer steps; use 1 to log every step')
+    p.add_argument('--sample_every', type=int, default=200, help='generate + log a text sample every N optimizer steps (kept separate from log_every since generation is slow)')
     p.add_argument('--save_every', type=int, default=50, help='save checkpoint every N optimizer steps')
     p.add_argument('--keep_last_k', type=int, default=2, help='keep last K step checkpoints (plus model_last.pt)')
     args = p.parse_args()
@@ -212,12 +214,15 @@ def main():
                     if _is_tb(logger):
                         logger.text("meta/checkpoint", f"Saved at step {step}", step)
 
-                #logging
-                if step % 50 == 0 :
+                #logging (cheap: loss/lr/runtime/param norms) — can be every step
+                if step % args.log_every == 0 :
                     logger.log(step = step , loss = float(loss.item()) , lr=float(lr))
                     _log_runtime(logger , step , it_t0 , xb , device)
                     _log_model_stats(logger , model  , step , do_hists  = False )
                     _maybe_log_attention(logger  , model , xb , step , every = 100 )
+
+                #text sample generation is expensive (autoregressive) — kept on its own, coarser cadence
+                if step % args.sample_every == 0 :
                     _log_samples_tb(logger , model , tok , xb , device , step , max_new_tokens=64)
 
     # ---- final save ----
@@ -228,4 +233,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

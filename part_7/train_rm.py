@@ -20,13 +20,14 @@ def main():
     p.add_argument('--lr', type=float, default=1e-4)
     p.add_argument('--loss', choices=['bt','margin'], default='bt')
     p.add_argument('--cpu', action='store_true')
+    p.add_argument('--split', type=str, default='train[:80]', help='HF split slice for preference data, e.g. train[:2000] or train (full)')
     p.add_argument('--bpe_dir', type=str, default=None)
     args = p.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() and not args.cpu else 'cpu')
     #data
 
-    items = load_preferences(split='train[:80]')
+    items = load_preferences(split=args.split)
     triples = [(it.prompt , it.chosen , it.rejected) for it in items]
 
     #collator + model
