@@ -92,7 +92,7 @@ def main():
             out_ids = []
             for i , x in enumerate( in_ids):
                 idx = torch.tensor([x] , dtype = torch.long , device = device)
-                out = policy.generate(idx , max_new_tokens = args.resp_len , temperature = 0.2  , top_k=3)
+                out = policy.generate(idx , max_new_tokens = args.resp_len , temperature = 0.8  , top_k=40)
                 out_ids.append(out[0].tolist())
 
         # split prompt / response per sample
@@ -177,7 +177,7 @@ def main():
 
         from ppo_loss import ppo_losses
         out_loss = ppo_losses(new_logp , old_logp , adv , new_values , old_values , returns ,
-                              clip_ratio = 0.2 ,vf_coef = 0.5 , ent_coef = 0.0)
+                              clip_ratio = 0.2 ,vf_coef = 0.5 , ent_coef = 0.01)
         
         loss = out_loss.total_loss
         opt.zero_grad(set_to_none = True)

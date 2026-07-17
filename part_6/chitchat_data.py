@@ -84,7 +84,7 @@ def _pairs() -> List[Tuple[str, str]]:
 
 
 def load_chitchat(repeat: int = 1) -> List[SFTItem]:
-    """Return the chit-chat set. `repeat` lets you oversample it relative to
+    """Return the chit-chat set. `repeat` letws you oversample it relative to
     a much larger instruction dataset (e.g. Alpaca) so the model doesn't
     treat these examples as noise.
     """

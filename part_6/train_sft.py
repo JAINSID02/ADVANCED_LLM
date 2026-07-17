@@ -20,6 +20,8 @@ def main():
     p.add_argument('--alpaca_split', type=str, default='train[:3000]', help='HF slice string, e.g. train[:3000] or train (full)')
     p.add_argument('--no_chitchat', action='store_true', help='disable the hand-written greeting/identity dataset')
     p.add_argument('--chitchat_repeat', type=int, default=3, help='oversample factor for the small chitchat set')
+    p.add_argument('--about_me_repeat', type=int, default=0, help='oversample factor for about_me_data.py; 0 = disabled')
+    p.add_argument('--no_alpaca', action='store_true', help='disable Alpaca, train only on chitchat + about_me')
     p.add_argument('--ckpt', type=str, required=False, help='base checkpoint to fine-tune from (e.g. part_4 pretrained model)')
     p.add_argument('--out', type=str, default='runs/sft')
     p.add_argument('--steps', type=int, default=200)
@@ -41,8 +43,11 @@ def main():
         items = load_chitchat(repeat=1)
     else:
         items = load_training_data(alpaca_split=args.alpaca_split,
-                                    include_chitchat=not args.no_chitchat,
-                                    chitchat_repeat=args.chitchat_repeat)
+                            include_chitchat=not args.no_chitchat,
+                            chitchat_repeat=args.chitchat_repeat,
+                            include_about_me=args.about_me_repeat > 0,
+                            about_me_repeat=args.about_me_repeat,
+                            include_alpaca=not args.no_alpaca)
 
     # Print few samples
     print(f"Loaded {len(items)} SFT items. Few samples:")
