@@ -202,9 +202,6 @@ See each `part_N/` folder for the full set of training flags for that stage.
 
 Python, PyTorch, custom BPE tokenizer (implemented from scratch), TensorBoard, Streamlit
 
-## Known limitations
-
-Being upfront about scope, rather than overselling it: this is a small model (6 layers, 384-dim) trained on a modest, narrow corpus, so it does not have broad world knowledge — its strength is demonstrating a complete, correctly implemented pipeline, not general-purpose chat quality. The RLHF stage in particular is delicate at this scale, and the PPO fix described above trades some training stability for the model's ability to explore during rollouts.
 
 ## Author
 
