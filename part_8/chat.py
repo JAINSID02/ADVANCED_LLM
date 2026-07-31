@@ -64,7 +64,7 @@ def stream_generate(model, tok, prompt_ids, device, max_new_tokens=150,
     returning everything at once.
     """
     try:
-        from utils import top_k_top_p_filtering as _filter
+        from part_3.utils import top_k_top_p_filtering as _filter
     except Exception:
         def _filter(x, **_):
             return x
